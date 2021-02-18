@@ -25,7 +25,7 @@ const NotificationScreen = (props) => {
               },
             }}
           />
-          <Text style={styles.textStyle}>This feature is not implemented</Text>
+          <Text style={styles.textStyle}>This feature is in progress</Text>
         </View>
       )}
     </AuthContext.Consumer>

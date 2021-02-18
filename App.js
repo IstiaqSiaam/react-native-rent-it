@@ -6,17 +6,36 @@ import SignUpScreen from "./src/screens/SignUpScreen";
 import SignInScreen from "./src/screens/SignInScreen";
 import { AuthContext, AuthProvider } from "./src/providers/AuthProvider";
 import PostScreen from "./src/screens/PostScreen";
+import ItemScreen from "./src/screens/ItemScreen";
+import AddProduct from './src/screens/AddProduct';
+
+import * as firebase from 'firebase';
 
 import ProfileScreen from "./src/screens/ProfileScreen";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Entypo, AntDesign, Ionicons } from "@expo/vector-icons";
 import NotificationScreen from "./src/screens/NotificationScreen";
+import ItemDetails from "./src/screens/ItemDetails";
 
 const HomeStack = createStackNavigator();
 const HomeTab = createMaterialBottomTabNavigator();
 const AppDrawer = createDrawerNavigator();
 const AuthStack = createStackNavigator();
+const ItemStack=createStackNavigator();
+
+var firebaseConfig = {
+  apiKey: "AIzaSyBMx2IxmTrVJ44wRUgftCn-CuXZ1hhyLz4",
+  authDomain: "rent-it-62a78.firebaseapp.com",
+  projectId: "rent-it-62a78",
+  storageBucket: "rent-it-62a78.appspot.com",
+  messagingSenderId: "323104612407",
+  appId: "1:323104612407:web:fdaec7d84ae023e5619fb2"
+};
+
+if(!firebase.apps.length){
+  firebase.initializeApp(firebaseConfig);
+}
 
 const HomeStackScreen = () => {
   return (
@@ -27,14 +46,26 @@ const HomeStackScreen = () => {
         options={{ headerShown: false }}
       ></HomeStack.Screen>
       <HomeStack.Screen
-      name="Posts"
-      component={PostScreen}
+      name="Item"
+      component={ItemScreen}
       options={{headerShown: false}}
       >
       </HomeStack.Screen>
+      <HomeStack.Screen name="Item Details" component={ItemDetails}/>
+      <HomeStack.Screen name="Add Product" component={AddProduct}/>
     </HomeStack.Navigator>
   );
 };
+
+//const ItemStackScreen=()=>{
+//  return(
+//    <ItemStack.Navigator>
+//      <ItemStack.Screen name="Home" component={HomeScreen}/>
+//      <ItemStack.Screen name="Item" component={ItemScreen}/>
+//      <ItemStack.Screen name="Item Details" component={ItemDetails}/>
+//    </ItemStack.Navigator>
+//  );
+//}
 
 const AppDrawerScreen = () => {
   return (
@@ -61,7 +92,7 @@ const HomeTabSrceen = () => {
         
       ></HomeTab.Screen>
       <HomeTab.Screen
-        name="Notification"
+        name="Cart"
         component={NotificationScreen}
       ></HomeTab.Screen>
     </HomeTab.Navigator>

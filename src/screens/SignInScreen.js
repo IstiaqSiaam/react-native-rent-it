@@ -1,72 +1,103 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Input, Button, Card } from "react-native-elements";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AuthContext } from "../providers/AuthProvider";
-import { getDataJSON } from "../functions/AsyncStorageFunctions";
+import { FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
+
+import { AuthContext } from "./../providers/AuthProvider";
+import * as firebase from "firebase";
+import Loading from "./../components/Loading";
+
 
 const SignInScreen = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  return (
-    <AuthContext.Consumer>
-      {(auth) => (
-        <View style={styles.viewStyle}>
-          <Card>
-            <Card.Title>Welcome to the blogg</Card.Title>
-            <Card.Divider />
-            <Input
-              leftIcon={<MaterialIcons name="email" size={24} color="black" />}
-              placeholder="Email Address"
-              onChangeText={function (currentInput) {
-                setEmail(currentInput);
-              }}
-            />
-            <Input
-              leftIcon={<MaterialIcons name="lock" size={24} color="black" />}
-              placeholder="Password"
-              secureTextEntry={true}
-              onChangeText={function (currentInput) {
-                setPassword(currentInput);
-              }}
-            />
-            <Button
-              icon={<MaterialIcons name="lock-open" size={24} color="black" />}
-              title="Sign In"
-              type="solid"
-              onPress={async function () {
-                let userData = await getDataJSON(email);
-                console.log(userData);
-
-                if (userData.password == password) {
-                  auth.setIsLoggedIn(true);
-                  auth.setCurrentUser(userData);
-                } else {
-                  alert("wrong.Recheck email and password.");
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  if (isLoading) {
+    return <Loading />;
+  } else {
+    return (
+      <AuthContext.Consumer>
+        {(auth) => (
+          <View style={styles.viewStyle}>
+          {auth.setIsLoggedIn(false)}
+            <Card>
+              <Card.Title>Welcome to Rent-it</Card.Title>
+              <Card.Divider />
+              <Input
+                leftIcon={
+                  <FontAwesome name="envelope" size={24} color="black" />
                 }
-              }}
-            />
-            <Button
-              icon={<MaterialIcons name="lock-open" size={24} color="green" />}
-              title="Dont have an account? Sign Up!"
-              type="outline"
-              onPress={function () {
-                props.navigation.navigate("SignUp");
-              }}
-            />
-          </Card>
-        </View>
-      )}
-    </AuthContext.Consumer>
-  );
+                placeholder="Email"
+                onChangeText={function (currentInput) {
+                  setEmail(currentInput);
+                }}
+              />
+
+              <Input
+                placeholder="Password"
+                leftIcon={<Feather name="key" size={24} color="black" />}
+                secureTextEntry={true}
+                onChangeText={function (currentInput) {
+                  setPassword(currentInput);
+                }}
+              />
+
+              <Button
+                icon={<AntDesign name="login" size={24} color="white" />}
+                title="  Sign In!"
+                type="solid"
+                onPress={() => {
+                  setIsLoading(true);
+                  firebase
+                    .auth()
+                    .signInWithEmailAndPassword(Email, Password)
+                    .then((userCreds) => {
+                      //setIsLoading(false);
+                      auth.setIsLoggedIn(true);
+                      // Retrieving user data and save it to auth.CurrentUser
+                      firebase.firestore().collection('users').doc(userCreds.user.uid).get().then((doc)=>{
+                        if(doc.exists){
+                          //console.log(doc);
+                          auth.setCurrentUser(doc);
+                          setIsLoading(false);
+                        }else{
+                          console.log('No such document')
+                          setIsLoading(false);
+                        }
+                      }).catch((error)=>{
+                        console.log(error);
+                      });
+
+                      //console.log('userCreds',userCreds.uid);
+                      //auth.setCurrentUser(userCreds.user);
+                    })
+                    .catch((error) => {
+                      setIsLoading(false);
+                      alert(error);
+                    });
+                }}
+              />
+              <Button
+                type="clear"
+                icon={<AntDesign name="user" size={24} color="dodgerblue" />}
+                title="  Don't have an account?"
+                onPress={function () {
+                  props.navigation.navigate("SignUp");
+                }}
+              />
+            </Card>
+          </View>
+        )}
+      </AuthContext.Consumer>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
   viewStyle: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "#6600dd",
+    backgroundColor: "#ffffff",
   },
 });
-
 export default SignInScreen;

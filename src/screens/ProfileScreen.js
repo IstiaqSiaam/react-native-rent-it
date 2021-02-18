@@ -47,7 +47,7 @@ const ProfileScreen = (props) => {
             </View>
             <Text style={styles.textStyle}>{"\n"}{"\n"} {auth.currentUser.name} {"\n"}</Text>
             <Text style={styles.textStyle2}>
-              Student ID: {auth.currentUser.sID} 
+              Vendor ID: {auth.currentUser.sID} 
               {"\n"}{"\n"}
               Email: {auth.currentUser.email}
               {"\n"}
